@@ -176,38 +176,35 @@ if st.session_state.logged_in and selected == "Home":
         # Create interactive sections for each disease
         st.write("### Diabetes")
         st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
-            
-            with st.expander("Diabetes Overview", expanded=True):
-                st.write("**Symptoms**")
-                st.write("""
-                - Increased thirst
-                - Frequent urination
-                - Extreme hunger
-                - Unexplained weight loss
-                - Presence of ketones in the urine
-                - Fatigue
-                - Irritability
-                - Blurred vision
-                """)
-                
-                st.write("**Causes**")
-                st.write("""
-                - Insulin resistance (Type 2 Diabetes)
-                - Genetic factors
-                - Age, with risk increasing after 45 years old
-                - Lack of physical activity
-                - Poor diet (high in sugar and unhealthy fats)
-                - Obesity
-                """)
-                
-                st.write("**Prevention**")
-                st.write("""
-                - Maintaining a healthy weight
-                - Eating a balanced diet rich in fruits, vegetables, and whole grains
-                - Regular physical activity
-                - Avoiding excessive alcohol and tobacco use
-                - Monitoring blood sugar levels, especially for those at risk
-                """)
+        with st.expander("Diabetes Overview", expanded=True):
+            st.write("**Symptoms**")
+            st.write("""
+            - Increased thirst
+            - Frequent urination
+            - Extreme hunger
+            - Unexplained weight loss
+            - Presence of ketones in the urine
+            - Fatigue
+            - Irritability
+            - Blurred vision
+            """)
+            st.write("**Causes**")
+            st.write("""
+            - Insulin resistance (Type 2 Diabetes)
+            - Genetic factors
+            - Age, with risk increasing after 45 years old
+            - Lack of physical activity
+            - Poor diet (high in sugar and unhealthy fats)
+            - Obesity
+            """)
+            st.write("**Prevention**")
+            st.write("""
+            - Maintaining a healthy weight
+            - Eating a balanced diet rich in fruits, vegetables, and whole grains
+            - Regular physical activity
+            - Avoiding excessive alcohol and tobacco use
+            - Monitoring blood sugar levels, especially for those at risk
+            """)
     
             # Heart Disease
             st.write("### Heart Disease")
