@@ -47,36 +47,9 @@ diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-# Dictionary to store user data temporarily
-users_db = {}
-
-# Function to validate email format (checks for basic email structure and @gmail.com)
 def validate_email(email):
     email = email.strip().lower()
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-        return False
-    if not email.endswith("@gmail.com"):
-        return False
-    return True
-
-# Function to authenticate login
-def authenticate(email, password):
-    email = email.strip().lower()
-    if email in users_db and users_db[email]["password"] == password:
-        return True
-    else:
-        return False
-
-# Function to register a new user (Signup)
-def signup(name, email, password):
-    email = email.strip().lower()
-    if email in users_db:
-        return False  # Email already exists
-    # Save user details in the "database"
-    users_db[email] = {"name": name, "password": password}
-    return True
- 
-
+    return re.match(r"[^@]+@[^@]+\.[^@]+", email) and email.endswith("@gmail.com")
 
 # Initialize session state variables
 if "logged_in" not in st.session_state:
