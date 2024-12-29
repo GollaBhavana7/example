@@ -151,17 +151,16 @@ elif selected == "Login":
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        # Validate email and password
         if not validate_email(email):
             st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
         elif authenticate_user(email, password):
             st.session_state.logged_in = True
             st.session_state.user = email
-            st.session_state.name = users_db[email]["name"]
-            st.session_state.selected_page = "Home"
+            st.session_state.name = email.split("@")[0]
             st.success("Login successful!")
         else:
             st.error("Invalid email or password. Please try again.")
+ 
 elif selected == "Feedback and Contact":
     st.title("Feedback Page")
 
