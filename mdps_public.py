@@ -147,16 +147,7 @@ with st.sidebar:
             icons=["house", "activity", "heart", "person", "envelope", "box-arrow-right"],
             default_index=0,
         )
-
-# Handle Logout separately
-if selected == "Logout":
-    st.session_state.logged_in = False
-    st.session_state.user = None
-    st.session_state.name = None
-    st.session_state.selected_page = "Home"
-    st.success("You have been logged out.")
-    st.stop()
-
+ 
 # Set background images based on selected page
 background_images = {
     "Diabetes Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/diabeties_background.jpg',
