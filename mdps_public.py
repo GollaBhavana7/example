@@ -2,55 +2,42 @@ import pickle
 import streamlit as st
 from streamlit_option_menu import option_menu
 import re
-import sqlite3
-
-# Initialize the SQLite database
-def init_db():
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        email TEXT UNIQUE,
-        password TEXT
-    )''')
-    conn.commit()
-    conn.close()
-
-# Add a new user
-def add_user(name, email, password):
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    try:
-        c.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", (name, email, password))
-        conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
-    finally:
-        conn.close()
-
-# Authenticate user
-def authenticate_user(email, password):
-    conn = sqlite3.connect("users.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
-    user = c.fetchone()
-    conn.close()
-    return user is not None
-
-# Initialize the database
-init_db()
 
 # Load saved models
 diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
 heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
 parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
-# Function to validate email format
+# Dictionary to store user data temporarily
+users_db = {}
+
+# Function to validate email format (checks for basic email structure and @gmail.com)
 def validate_email(email):
     email = email.strip().lower()
-    return re.match(r"[^@]+@[^@]+\.[^@]+", email) and email.endswith("@gmail.com")
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        return False
+    if not email.endswith("@gmail.com"):
+        return False
+    return True
+
+# Function to authenticate login
+def authenticate(email, password):
+    email = email.strip().lower()
+    if email in users_db and users_db[email]["password"] == password:
+        return True
+    else:
+        return False
+
+# Function to register a new user (Signup)
+def signup(name, email, password):
+    email = email.strip().lower()
+    if email in users_db:
+        return False  # Email already exists
+    # Save user details in the "database"
+    users_db[email] = {"name": name, "password": password}
+    return True
+ 
+
 
 # Initialize session state variables
 if "logged_in" not in st.session_state:
@@ -93,48 +80,9 @@ if selected == "Logout":
     st.session_state.logged_in = False
     st.session_state.user = None
     st.session_state.name = None
+    st.session_state.selected_page = "Home"
     st.success("You have been logged out.")
     st.stop()
-
-# Signup Page
-if selected == "Signup":
-    st.title("Signup Page")
-
-    name = st.text_input("Full Name", key="signup_name")
-    email = st.text_input("Email", key="signup_email")
-    password = st.text_input("Password", type="password", key="signup_password")
-    confirm_password = st.text_input("Confirm Password", type="password", key="signup_confirm_password")
-
-    if st.button("Create Account", key="create_account"):
-        if not validate_email(email):
-            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
-        elif password != confirm_password:
-            st.error("Passwords do not match. Please try again.")
-        elif add_user(name, email, password):
-            st.success(f"Account created successfully for {name}!")
-            st.session_state.logged_in = True
-            st.session_state.user = email
-            st.session_state.name = name
-        else:
-            st.error("This email is already registered. Please login.")
-
-# Login Page
-elif selected == "Login":
-    st.title("Login Page")
-
-    email = st.text_input("Email", key="login_email")
-    password = st.text_input("Password", type="password", key="login_password")
-
-    if st.button("Login", key="login_button"):
-        if not validate_email(email):
-            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
-        elif authenticate_user(email, password):
-            st.session_state.logged_in = True
-            st.session_state.user = email
-            st.session_state.name = email.split("@")[0]
-            st.success("Login successful!")
-        else:
-            st.error("Invalid email or password. Please try again.")
 
 # Set background images based on selected page
 background_images = {
@@ -157,54 +105,133 @@ if selected in background_images:
         """, unsafe_allow_html=True
     )
 
-# Home Page
-if st.session_state.logged_in and selected == "Home":
-    st.title("Welcome to the Predictive Disease Detection App")
-    st.markdown("""
-    This application leverages machine learning models to predict the likelihood of various diseases:
-    - **Diabetes**
-    - **Heart Disease**
-    - **Parkinson's Disease**
+# Signup Page
+if selected == "Signup":
+    st.title("Signup Page")
 
-    Select a disease prediction option from the sidebar to get started with predictions.
-    """)
-    # Section for Disease Information
-    st.subheader("Disease Information")
-    # Add interactive button for a user to show/hide disease details
-    show_details = st.checkbox("Click to expand disease details", value=True)
-    if show_details:
-        # Create interactive sections for each disease
-        st.write("### Diabetes")
-        st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
-        with st.expander("Diabetes Overview", expanded=True):
-            st.write("**Symptoms**")
-            st.write("""
-            - Increased thirst
-            - Frequent urination
-            - Extreme hunger
-            - Unexplained weight loss
-            - Presence of ketones in the urine
-            - Fatigue
-            - Irritability
-            - Blurred vision
-            """)
-            st.write("**Causes**")
-            st.write("""
-            - Insulin resistance (Type 2 Diabetes)
-            - Genetic factors
-            - Age, with risk increasing after 45 years old
-            - Lack of physical activity
-            - Poor diet (high in sugar and unhealthy fats)
-            - Obesity
-            """)
-            st.write("**Prevention**")
-            st.write("""
-            - Maintaining a healthy weight
-            - Eating a balanced diet rich in fruits, vegetables, and whole grains
-            - Regular physical activity
-            - Avoiding excessive alcohol and tobacco use
-            - Monitoring blood sugar levels, especially for those at risk
-            """)
+    # Signup form fields
+    name = st.text_input("Full Name")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+    confirm_password = st.text_input("Confirm Password", type="password")
+
+    if st.button("Create Account"):
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif password != confirm_password:
+            st.error("Passwords do not match. Please try again.")
+        elif signup(name, email, password):
+            st.success(f"Account created successfully for {name}!")
+            st.session_state.logged_in = True
+            st.session_state.user = email
+            st.session_state.name = name
+            st.session_state.selected_page = "Home"
+        else:
+            st.error("This email is already registered. Please login.")
+
+# Login Page
+elif selected == "Login":
+    st.title("Login Page")
+
+    # Login form fields
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+        # Validate email and password
+        if not validate_email(email):
+            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
+        elif authenticate(email, password):
+            st.session_state.logged_in = True
+            st.session_state.user = email
+            st.session_state.name = users_db[email]["name"]
+            st.session_state.selected_page = "Home"
+            st.success("Login successful!")
+        else:
+            st.error("Invalid email or password. Please try again.")
+elif selected == "Feedback and Contact":
+    st.title("Feedback Page")
+
+    # Feedback form fields
+    feedback_name = st.text_input("Your Name")
+    feedback_email = st.text_input("Your Email")
+    feedback_message = st.text_area("Your Feedback", height=150)
+
+    if st.button("Submit Feedback"):
+        if feedback_name and feedback_email and feedback_message:
+            # Here you can add code to save the feedback to a database or send it via email
+            st.success("Thank you for your feedback!")
+        else:
+            st.error("Please fill in all fields before submitting.")
+    st.markdown("---")
+    st.markdown("### Contact Information")
+    st.markdown("For any queries or support, please reach out to us at:")
+    st.markdown("- **Phone**: +91 7569325090")
+    st.markdown("- **Email**: [bhavanagolla2003@gmail.com](mailto:bhavanagolla2003@gmail.com)")
+    st.markdown("- **Email**: [punithajajam@gmail.com](mailto:punithajajam@gmail.com@gmail.com)")
+    st.markdown("- **Email**: [buradarohit18@gmail.com](mailto:buradarohit18@gmail.com)")
+    st.markdown("---")
+        
+
+# Disease Prediction Pages (visible after successful login)
+if st.session_state.logged_in:
+    # Home Page
+    if selected == "Home":
+        st.title("Welcome to the Predictive Disease Detection App")
+        
+        # Brief Introduction
+        st.markdown("""
+        This application leverages machine learning models to predict the likelihood of various diseases:
+        - **Diabetes**
+        - **Heart Disease**
+        - **Parkinson's Disease**
+        
+        Select a disease prediction option from the sidebar to get started with predictions.
+        """)
+    
+        # Section for Disease Information
+        st.subheader("Disease Information")
+        
+        # Add interactive button for a user to show/hide disease details
+        show_details = st.checkbox("Click to expand disease details", value=True)
+        
+        if show_details:
+            # Create interactive sections for each disease
+            st.write("### Diabetes")
+            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
+            
+            with st.expander("Diabetes Overview", expanded=True):
+                st.write("**Symptoms**")
+                st.write("""
+                - Increased thirst
+                - Frequent urination
+                - Extreme hunger
+                - Unexplained weight loss
+                - Presence of ketones in the urine
+                - Fatigue
+                - Irritability
+                - Blurred vision
+                """)
+                
+                st.write("**Causes**")
+                st.write("""
+                - Insulin resistance (Type 2 Diabetes)
+                - Genetic factors
+                - Age, with risk increasing after 45 years old
+                - Lack of physical activity
+                - Poor diet (high in sugar and unhealthy fats)
+                - Obesity
+                """)
+                
+                st.write("**Prevention**")
+                st.write("""
+                - Maintaining a healthy weight
+                - Eating a balanced diet rich in fruits, vegetables, and whole grains
+                - Regular physical activity
+                - Avoiding excessive alcohol and tobacco use
+                - Monitoring blood sugar levels, especially for those at risk
+                """)
     
             # Heart Disease
             st.write("### Heart Disease")
@@ -580,160 +607,3 @@ if st.session_state.logged_in and selected == "Home":
                 # Display the table using st.table
                 st.table(test_data)
     
-
-
-
-
-# Load saved models
-diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
-heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
-parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
-
-# Function to validate email format
-def validate_email(email):
-    email = email.strip().lower()
-    return re.match(r"[^@]+@[^@]+\.[^@]+", email) and email.endswith("@gmail.com")
-
-# Initialize session state variables
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "user" not in st.session_state:
-    st.session_state.user = None
-if "name" not in st.session_state:
-    st.session_state.name = None
-if "selected_page" not in st.session_state:
-    st.session_state.selected_page = "Home"
-if "show_report" not in st.session_state:
-    st.session_state.show_report = False
-
-# Sidebar for navigation
-with st.sidebar:
-    if not st.session_state.logged_in:
-        selected = option_menu(
-            "Predictive Disease Detection App",
-            ["Login", "Signup"],
-            icons=["key", "person-plus"],
-            default_index=0,
-        )
-    else:
-        selected = option_menu(
-            "Predictive Disease Detection App",
-            [
-                "Home",
-                "Diabetes Prediction",
-                "Heart Disease Prediction",
-                "Parkinson's Prediction",
-                "Feedback and Contact",
-                "Logout",
-            ],
-            icons=["house", "activity", "heart", "person", "envelope", "box-arrow-right"],
-            default_index=0,
-        )
-
-# Handle Logout separately
-if selected == "Logout":
-    st.session_state.logged_in = False
-    st.session_state.user = None
-    st.session_state.name = None
-    st.success("You have been logged out.")
-    st.stop()
-
-# Signup Page
-if selected == "Signup":
-    st.title("Signup Page")
-
-    name = st.text_input("Full Name", key="signup_name")
-    email = st.text_input("Email", key="signup_email")
-    password = st.text_input("Password", type="password", key="signup_password")
-    confirm_password = st.text_input("Confirm Password", type="password", key="signup_confirm_password")
-
-    if st.button("Create Account", key="create_account"):
-        if not validate_email(email):
-            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
-        elif password != confirm_password:
-            st.error("Passwords do not match. Please try again.")
-        elif add_user(name, email, password):
-            st.success(f"Account created successfully for {name}!")
-            st.session_state.logged_in = True
-            st.session_state.user = email
-            st.session_state.name = name
-        else:
-            st.error("This email is already registered. Please login.")
-
-# Login Page
-elif selected == "Login":
-    st.title("Login Page")
-
-    email = st.text_input("Email", key="login_email")
-    password = st.text_input("Password", type="password", key="login_password")
-
-    if st.button("Login", key="login_button"):
-        if not validate_email(email):
-            st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
-        elif authenticate_user(email, password):
-            st.session_state.logged_in = True
-            st.session_state.user = email
-            st.session_state.name = email.split("@")[0]
-            st.success("Login successful!")
-        else:
-            st.error("Invalid email or password. Please try again.")
-
-# Set background images based on selected page
-background_images = {
-    "Diabetes Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/diabeties_background.jpg',
-    "Heart Disease Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/heart_disease_background.jpg',
-    "Parkinson's Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/parkinsons_background.jpg'
-}
-
-if selected in background_images:
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.9)), 
-                              url('{background_images[selected]}');
-            background-size: cover;
-            background-position: center;
-        }}
-        </style>
-        """, unsafe_allow_html=True
-    )
-
-# Home Page
-if st.session_state.logged_in and selected == "Home":
-    st.title("Welcome to the Predictive Disease Detection App")
-    st.markdown("""
-    This application leverages machine learning models to predict the likelihood of various diseases:
-    - **Diabetes**
-    - **Heart Disease**
-    - **Parkinson's Disease**
-
-    Select a disease prediction option from the sidebar to get started with predictions.
-    """)
-
-# Include additional disease prediction pages and feedback/contact as in the original code but ensure no duplicate keys are present.
-# Ensure appropriate error handling for model predictions.
-
-# Example for Diabetes Prediction Page
-elif st.session_state.logged_in and selected == "Diabetes Prediction":
-    st.title("Diabetes Prediction using ML")
-    patient_name = st.text_input("Patient Name", key="diabetes_patient_name")
-    Pregnancies = st.number_input("Number of Pregnancies", min_value=0, key="pregnancies")
-    Glucose = st.number_input("Glucose Level", min_value=0, key="glucose")
-    BloodPressure = st.number_input("Blood Pressure value", min_value=0, key="blood_pressure")
-    SkinThickness = st.number_input("Skin Thickness value", min_value=0, key="skin_thickness")
-    Insulin = st.number_input("Insulin Level", min_value=0, key="insulin")
-    BMI = st.number_input("BMI value", min_value=0.0, format="%.2f", key="bmi")
-    DiabetesPedigreeFunction = st.number_input("Diabetes Pedigree Function value", min_value=0.0, format="%.2f", key="diabetes_pedigree")
-    Age = st.number_input("Age of the Person", min_value=0, key="age")
-
-    if st.button("Diabetes Test Result", key="diabetes_result"):
-        try:
-            diab_prediction = diabetes_model.predict(
-                [[Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]]
-            )
-            result = "Positive" if diab_prediction[0] == 1 else "Negative"
-            st.markdown(f"### Test Result: {result}")
-        except Exception as e:
-            st.error(f"Error during prediction: {e}")
-
