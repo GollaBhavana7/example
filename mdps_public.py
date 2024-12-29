@@ -4,9 +4,9 @@ from streamlit_option_menu import option_menu
 import re
 
 # Load saved models
-diabetes_model = pickle.load(open('example/pdd-main/mdpd/diabetes_model.sav', 'rb'))
-heart_disease_model = pickle.load(open('exstreamlit/pdd-main/mdpd/heart_disease_model.sav', 'rb'))
-parkinsons_model = pickle.load(open('exstreamlit/pdd-main/mdpd/parkinsons_model.sav', 'rb'))
+diabetes_model = pickle.load(open('diabetes_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('heart_disease_model.sav', 'rb'))
+parkinsons_model = pickle.load(open('parkinsons_model.sav', 'rb'))
 
 # Dictionary to store user data temporarily
 users_db = {}
