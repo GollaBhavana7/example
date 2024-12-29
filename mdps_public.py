@@ -86,9 +86,9 @@ if selected == "Logout":
 
 # Set background images based on selected page
 background_images = {
-    "Diabetes Prediction": 'diabeties_background.jpg',
-    "Heart Disease Prediction": 'heart_disease_background.jpg',
-    "Parkinson's Prediction": 'parkinsons_background.jpg'
+    "Diabetes Prediction": 'https://github.com/GollaBhavana7/example/blob/main/diabeties_background.jpg',
+    "Heart Disease Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/heart_disease_background.jpg',
+    "Parkinson's Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/parkinsons_background.jpg'
 }
 
 if selected in background_images:
@@ -199,7 +199,7 @@ if st.session_state.logged_in:
         if show_details:
             # Create interactive sections for each disease
             st.write("### Diabetes")
-            st.image("sugar-blood-level.png", width=150)
+            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
             
             with st.expander("Diabetes Overview", expanded=True):
                 st.write("**Symptoms**")
@@ -235,7 +235,7 @@ if st.session_state.logged_in:
     
             # Heart Disease
             st.write("### Heart Disease")
-            st.image("heart-disease.png", width=150)
+            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/heart-disease.png?raw=true", width=150)
     
             with st.expander("Heart Disease Overview", expanded=True):
                 st.write("**Symptoms**")
@@ -273,7 +273,7 @@ if st.session_state.logged_in:
     
             # Parkinson's Disease
             st.write("### Parkinson's Disease")
-            st.image("parkinsons icon.png", width=150)
+            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/parkinsons%20icon.png?raw=true", width=150)
     
             with st.expander("Parkinson's Disease Overview", expanded=True):
                 st.write("**Symptoms**")
