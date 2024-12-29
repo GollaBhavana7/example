@@ -86,9 +86,9 @@ if selected == "Logout":
 
 # Set background images based on selected page
 background_images = {
-    "Diabetes Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/diabeties_background.jpg',
-    "Heart Disease Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/heart_disease_background.jpg',
-    "Parkinson's Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/parkinsons_background.jpg'
+    "Diabetes Prediction": 'diabeties_background.jpg',
+    "Heart Disease Prediction": 'heart_disease_background.jpg',
+    "Parkinson's Prediction": 'parkinsons_background.jpg'
 }
 
 if selected in background_images:
