@@ -154,7 +154,7 @@ elif selected == "Login":
         # Validate email and password
         if not validate_email(email):
             st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
-        elif authenticate(email, password):
+        elif authenticate_user(email, password):
             st.session_state.logged_in = True
             st.session_state.user = email
             st.session_state.name = users_db[email]["name"]
