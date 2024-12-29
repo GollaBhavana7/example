@@ -53,7 +53,7 @@ def validate_email(email):
     return re.match(r"[^@]+@[^@]+\.[^@]+", email) and email.endswith("@gmail.com")
 
 # Signup Page
-if selected == "Signup":
+if selected == "signup":
     st.title("Signup Page")
 
     name = st.text_input("Full Name")
