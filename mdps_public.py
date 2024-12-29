@@ -41,6 +41,58 @@ def authenticate_user(email, password):
 
 # Initialize the database
 init_db()
+
+      
+# Load saved models
+diabetes_model = pickle.load(open('exstreamlit/pdd-main/mdpd/diabetes_model.sav', 'rb'))
+heart_disease_model = pickle.load(open('exstreamlit/pdd-main/mdpd/heart_disease_model.sav', 'rb'))
+parkinsons_model = pickle.load(open('exstreamlit/pdd-main/mdpd/parkinsons_model.sav', 'rb'))
+
+# Function to register a new user (Signup)
+def signup(name, email, password):
+    email = email.strip().lower()
+    if email in users_db:
+        return False  # Email already exists
+    # Save user details in the "database"
+    users_db[email] = {"name": name, "password": password}
+    return True
+ 
+# Initialize session state variables
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "user" not in st.session_state:
+    st.session_state.user = None
+if "name" not in st.session_state:
+    st.session_state.name = None
+if "selected_page" not in st.session_state:
+    st.session_state.selected_page = "Home"
+if "show_report" not in st.session_state:
+    st.session_state.show_report = False
+
+# Sidebar for navigation
+with st.sidebar:
+    if not st.session_state.logged_in:
+        selected = option_menu(
+            "Predictive Disease Detection App",
+            ["Login", "Signup"],
+            icons=["key", "person-plus"],
+            default_index=0,
+        )
+    else:
+        selected = option_menu(
+            "Predictive Disease Detection App",
+            [
+                "Home",
+                "Diabetes Prediction",
+                "Heart Disease Prediction",
+                "Parkinson's Prediction",
+                "Feedback and Contact",
+                "Logout",
+            ],
+            icons=["house", "activity", "heart", "person", "envelope", "box-arrow-right"],
+            default_index=0,
+        )
+ 
  
 # Function to validate email format
 def validate_email(email):
@@ -95,59 +147,6 @@ elif selected == "Login":
         else:
             st.error("Invalid email or password. Please try again.")
 
-      
-# Load saved models
-diabetes_model = pickle.load(open('exstreamlit/pdd-main/mdpd/diabetes_model.sav', 'rb'))
-heart_disease_model = pickle.load(open('exstreamlit/pdd-main/mdpd/heart_disease_model.sav', 'rb'))
-parkinsons_model = pickle.load(open('exstreamlit/pdd-main/mdpd/parkinsons_model.sav', 'rb'))
-
-# Function to register a new user (Signup)
-def signup(name, email, password):
-    email = email.strip().lower()
-    if email in users_db:
-        return False  # Email already exists
-    # Save user details in the "database"
-    users_db[email] = {"name": name, "password": password}
-    return True
- 
-
-
-# Initialize session state variables
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "user" not in st.session_state:
-    st.session_state.user = None
-if "name" not in st.session_state:
-    st.session_state.name = None
-if "selected_page" not in st.session_state:
-    st.session_state.selected_page = "Home"
-if "show_report" not in st.session_state:
-    st.session_state.show_report = False
-
-# Sidebar for navigation
-with st.sidebar:
-    if not st.session_state.logged_in:
-        selected = option_menu(
-            "Predictive Disease Detection App",
-            ["Login", "Signup"],
-            icons=["key", "person-plus"],
-            default_index=0,
-        )
-    else:
-        selected = option_menu(
-            "Predictive Disease Detection App",
-            [
-                "Home",
-                "Diabetes Prediction",
-                "Heart Disease Prediction",
-                "Parkinson's Prediction",
-                "Feedback and Contact",
-                "Logout",
-            ],
-            icons=["house", "activity", "heart", "person", "envelope", "box-arrow-right"],
-            default_index=0,
-        )
- 
 # Set background images based on selected page
 background_images = {
     "Diabetes Prediction": 'https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/diabeties_background.jpg',
