@@ -199,7 +199,7 @@ if st.session_state.logged_in:
         if show_details:
             # Create interactive sections for each disease
             st.write("### Diabetes")
-            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
+            st.image("sugar-blood-level.png", width=150)
             
             with st.expander("Diabetes Overview", expanded=True):
                 st.write("**Symptoms**")
@@ -235,7 +235,7 @@ if st.session_state.logged_in:
     
             # Heart Disease
             st.write("### Heart Disease")
-            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/heart-disease.png?raw=true", width=150)
+            st.image("heart-disease.png", width=150)
     
             with st.expander("Heart Disease Overview", expanded=True):
                 st.write("**Symptoms**")
@@ -273,7 +273,7 @@ if st.session_state.logged_in:
     
             # Parkinson's Disease
             st.write("### Parkinson's Disease")
-            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/parkinsons%20icon.png?raw=true", width=150)
+            st.image("parkinsons icon.png", width=150)
     
             with st.expander("Parkinson's Disease Overview", expanded=True):
                 st.write("**Symptoms**")
