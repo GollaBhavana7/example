@@ -168,16 +168,14 @@ if st.session_state.logged_in and selected == "Home":
 
     Select a disease prediction option from the sidebar to get started with predictions.
     """)
-        # Section for Disease Information
-        st.subheader("Disease Information")
-        
-        # Add interactive button for a user to show/hide disease details
-        show_details = st.checkbox("Click to expand disease details", value=True)
-        
-        if show_details:
-            # Create interactive sections for each disease
-            st.write("### Diabetes")
-            st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
+    # Section for Disease Information
+    st.subheader("Disease Information")
+    # Add interactive button for a user to show/hide disease details
+    show_details = st.checkbox("Click to expand disease details", value=True)
+    if show_details:
+        # Create interactive sections for each disease
+        st.write("### Diabetes")
+        st.image("https://github.com/GollaBhavana7/exstreamlit/blob/main/exstreamlit/pdd-main/mdpd/images/sugar-blood-level.png?raw=true", width=150)
             
             with st.expander("Diabetes Overview", expanded=True):
                 st.write("**Symptoms**")
