@@ -121,26 +121,24 @@ if selected in background_images:
 if selected == "Signup":
     st.title("Signup Page")
 
-    # Signup form fields
     name = st.text_input("Full Name")
     email = st.text_input("Email")
     password = st.text_input("Password", type="password")
     confirm_password = st.text_input("Confirm Password", type="password")
 
     if st.button("Create Account"):
-        # Validate email and password
         if not validate_email(email):
             st.error("Please enter a valid Gmail address (e.g., example@gmail.com).")
         elif password != confirm_password:
             st.error("Passwords do not match. Please try again.")
-        elif signup(name, email, password):
+        elif add_user(name, email, password):
             st.success(f"Account created successfully for {name}!")
             st.session_state.logged_in = True
             st.session_state.user = email
             st.session_state.name = name
-            st.session_state.selected_page = "Home"
         else:
             st.error("This email is already registered. Please login.")
+
 
 # Login Page
 elif selected == "Login":
