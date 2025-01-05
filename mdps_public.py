@@ -112,7 +112,6 @@ if selected in background_images:
                           url('https://raw.githubusercontent.com/GollaBhavana7/exstreamlit/main/exstreamlit/pdd-main/mdpd/images/default_background.jpg');
         background-size: cover;
         background-position: center;
-        font-family: Arial, sans-serif;
     }
     .stMarkdown, .stText, h1, h2, h3, h4, h5, h6, p, label {
         color: #333333 !important; /* Dark text */
