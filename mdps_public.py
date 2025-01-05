@@ -111,8 +111,7 @@ if selected in background_images:
             background-image: url("{background_images[selected]}");
             background-size: cover;
             background-position: center;
-        }
-        }
+        }}
     st.markdown(
     """
     <style>
